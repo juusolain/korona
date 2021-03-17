@@ -6,7 +6,6 @@ const fs = require('fs')
 module.exports = function run(){
     JSONstat(url).then(J=>{
         const tbl = J.Dataset( 0 ).toTable({ type: 'arrobj' })
-        const grp = _.groupBy(tbl, "dateweek20201226")
-        fs.writeFileSync('./out/vaccines.json', JSON.stringify(grp))
+        fs.writeFileSync('./out/vaccines.json', JSON.stringify(tbl))
     })
 }
