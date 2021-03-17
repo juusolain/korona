@@ -38,5 +38,5 @@ jobs:
           git config --global user.name "Korona graphs bot"
           cd dist
           git add -A
-          git commit -m "update"
+          git commit -m "update" || true
           git push https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository}}.git gh-pages
