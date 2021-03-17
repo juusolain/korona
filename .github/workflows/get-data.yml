@@ -33,7 +33,7 @@ jobs:
       - name: Deploy data files
         run: |
           git clone --branch gh-pages https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository}}.git dist
-          cp get-data/out/* dist/data/
+          cp -rf get-data/out/* dist/data/
           git config --global user.email "korona-graphs@juusolain.fi"
           git config --global user.name "Korona graphs bot"
           cd dist
