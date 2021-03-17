@@ -4,7 +4,7 @@ name: get-data
 # events but only for the master branch
 on:
   schedule:
-    - cron: "0 */1 * * *" # trigger every hour
+    - cron: "0 * * * *" # trigger every hour
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -32,11 +32,11 @@ jobs:
 
       - name: Deploy data files
         run: |
-          git clone --branch gh-pages https://${{ GITHUB_ACTOR }}:${{ GITHUB_TOKEN }}@github.com/juusolain/korona.git dist
+          git clone --branch gh-pages https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository}}.git dist
           cp get-data/out/* dist/data/
           git config --global user.email "korona-graphs@juusolain.fi"
           git config --global user.name "Korona graphs bot"
           cd dist
           git add -A
           git commit -m "update"
-          git push https://${{ GITHUB_ACTOR }}:${{ GITHUB_TOKEN }}@github.com/juusolain/korona.git gh-pages
+          git push https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository}}.git gh-pages
