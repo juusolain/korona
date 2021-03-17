@@ -23,21 +23,17 @@ jobs:
         with:
           node-version: "14"
 
-      - name: cd get-data script and mkdir out
+      - name: Run script
         run: |
           cd get-data
           mkdir out
-
-      - name: NPM install
-        run: npm install
-
-      - name: NPM run
-        run: npm run start
+          npm install
+          npm run start
 
       - name: Deploy data files
         run: |
           git clone --branch gh-pages https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/juusolain/korona.git dist
-          cp out/* dist/data/
+          cp get-data/out/* dist/data/
           git config --global user.email "korona-graphs@juusolain.fi"
           git config --global user.name "Korona graphs bot"
           cd dist
