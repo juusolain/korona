@@ -1,1 +1,27 @@
-Placeholder for now...
+<!doctype html>
+<html>
+<head>
+  <title>Korona</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.bundle.min.js"></script>
+  <script src="/script.js"></script>
+  <link href="/tailwind.css" rel="stylesheet">
+</head>
+<body class="flex w-full h-screen flex-col">
+    <div class="top-0 w-full flex mx-auto bg-green-200 p-3 rounded border-b-2">
+      <p class="text-4xl text-left text-gray-700">Koronakuvaajat</p>
+    </div>
+    <div class="flex-1 grid grid-rows-3 gap-2 grid-flow-col m-2 text-gray-700">
+      <div class="row-span-2 bg-gray-200 border rounded p-2">
+        <p class="text-xl">Valitse kunta alta</p>
+      </div>
+      <div class="row-span-1 bg-purple-200 border rounded p-2">
+        <p>Hi</p>
+      </div>
+      <div class="row-span-3 col-span-2 bg-blue-200 border rounded p-2">
+        <canvas id="vaccinationChart"></canvas>
+      </div>
+    </div>
+</body>
+</html>
