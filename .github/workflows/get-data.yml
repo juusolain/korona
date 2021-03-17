@@ -3,8 +3,8 @@ name: Deploy
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  push:
-    branches: [master]
+  schedule:
+    - cron: "0 */1 * * *" # trigger every hour
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -31,13 +31,13 @@ jobs:
       - name: NPM run
         run: npm run start
 
-      - name: Clone branch
+      - name: Deploy data files
         run: |
-          git clone --branch gh-pages https://github.com/juusolain/korona dist
+          git clone --branch gh-pages https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/juusolain/korona.git dist
           cp out/* dist/data/
           git config --global user.email "korona-graphs@juusolain.fi"
           git config --global user.name "Korona graphs bot"
           cd dist
           git add -A
           git commit -m "update"
-          git push 
+          git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/juusolain/korona.git gh-pages
