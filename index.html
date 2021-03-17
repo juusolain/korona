@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
   <script src="/script.js"></script>
   <link href="/tailwind.css" rel="stylesheet">
 </head>
@@ -13,13 +14,15 @@
       <p class="text-4xl text-left text-gray-700">Koronakuvaajat</p>
     </div>
     <div class="flex-1 grid grid-rows-3 gap-2 grid-flow-col m-2 text-gray-700">
-      <div class="row-span-2 bg-gray-200 border rounded p-2">
-        <p class="text-xl">Valitse kunta alta</p>
+      <div class="row-span-2 bg-gray-200 border rounded p-2 space-y-2">
+        <p class="text-xl">Valitse alue alta</p>
+        <select id="areaSelect" class="border rounded p-2" onSelect="setArea()"></select>
       </div>
       <div class="row-span-1 bg-purple-200 border rounded p-2">
-        <p>Hi</p>
+        <p>Tämän projektin lähdekoodi löytyy <a class="text-blue-500" href="https://github.com/juusolain/korona">Githubista</a></p>
       </div>
       <div class="row-span-3 col-span-2 bg-blue-200 border rounded p-2">
+        <p class="text-xl">Koronarokotusten edistyminen ikäluokittain</p>
         <canvas id="vaccinationChart"></canvas>
       </div>
     </div>
