@@ -8,20 +8,37 @@
   <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
   <script src="/script.js"></script>
   <link href="/tailwind.css" rel="stylesheet">
+  <link href="/custom.css" rel="stylesheet">
 </head>
 <body class="flex w-full h-screen flex-col">
     <div class="top-0 w-full flex mx-auto bg-green-200 p-3 rounded border-b-2">
       <p class="text-4xl text-left text-gray-700">Koronakuvaajat</p>
     </div>
-    <div class="flex-1 grid grid-rows-3 gap-2 grid-flow-col m-2 text-gray-700">
-      <div class="row-span-2 bg-gray-200 border rounded p-2 space-y-2">
+    <div class="grid grid-rows-3 gap-2 grid-flow-col m-2 text-gray-700">
+      <div class="row-span-2 bg-blue-200 border rounded p-2 space-y-2">
         <p class="text-xl">Valitse alue alta</p>
-        <select id="areaSelect" class="border rounded p-2" onSelect="setArea()"></select>
+        <select id="areaSelect" class="border rounded p-2"></select>
+        <div class="flex flex-1 flex-col select-none">
+          <label class="checkbox">Kumulatiivinen
+            <input class="checkbox" type="checkbox" />
+            <span class="checkbox border rounded align-middle m-1"></span>
+          </label>
+          <label class="checkbox">Logaritminen asteikko
+            <input class="checkbox" type="checkbox" />
+            <span class="checkbox border rounded align-middle m-1"></span>
+          </label>
+          <label class="checkbox">Ennusta tulevia lukuja
+            <input class="checkbox" type="checkbox" />
+            <span class="checkbox border rounded align-middle m-1"></span>
+          </label>
+        
+        </div>
+        
       </div>
       <div class="row-span-1 bg-purple-200 border rounded p-2">
         <p>Tämän projektin lähdekoodi löytyy <a class="text-blue-500" href="https://github.com/juusolain/korona">Githubista</a></p>
       </div>
-      <div class="row-span-3 col-span-2 bg-blue-200 border rounded p-2">
+      <div class="row-span-3 col-span-2 bg-gray-200 border rounded p-2 pb-4">
         <p class="text-xl">Koronarokotusten edistyminen ikäluokittain</p>
         <canvas id="vaccinationChart"></canvas>
       </div>

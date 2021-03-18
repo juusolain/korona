@@ -1,6 +1,9 @@
 let vaccinationChart
 let cachedData
 
+let area = "Kaikki alueet"
+let cumulative = true
+
 const colors = [
     '#6666ff',
     '#66a3c2',
@@ -13,7 +16,8 @@ const colors = [
     '#ff5959',
     '#d95c83',
     '#b360ac',
-    '#8c63d6'
+    '#8c63d6',
+    ''
 ]
 
 
@@ -48,9 +52,14 @@ function setAreas() {
             )
         }
     })
+    areaSelect.onchange = (e)=>{
+        console.log(e.target.value)
+        area = e.target.value
+        updateData()
+    }
 }
 
-function updateData(area="Kaikki alueet", cumulative=true) {
+function updateData() {
     let data = cachedData
     data = _.filter(data, (o)=>{
         return o.area === area
@@ -99,10 +108,12 @@ function updateData(area="Kaikki alueet", cumulative=true) {
 
 function updateChart(labels, datasets){
     if(vaccinationChart){
-
+        vaccinationChart.data.labels = labels
+        vaccinationChart.data.datasets = datasets
+        vaccinationChart.update()
     }else{
         var ctx = document.getElementById('vaccinationChart').getContext('2d');
-        var vaccinationChart = new Chart(ctx, {
+        vaccinationChart = new Chart(ctx, {
             type: 'line',
             data: {
                 datasets: datasets,
