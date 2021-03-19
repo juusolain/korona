@@ -3,6 +3,10 @@ let cachedData
 
 let area = "Kaikki alueet"
 let cumulative = true
+let log = false
+
+let cachedLabels
+let cachedDatasets
 
 const colors = [
     '#6666ff',
@@ -17,7 +21,10 @@ const colors = [
     '#d95c83',
     '#b360ac',
     '#8c63d6',
-    ''
+    '#433a61',
+    '#613a58',
+    '#613a3b',
+    '#666'
 ]
 
 
@@ -53,9 +60,27 @@ function setAreas() {
         }
     })
     areaSelect.onchange = (e)=>{
-        console.log(e.target.value)
         area = e.target.value
         updateData()
+    }
+}
+
+function prepCheckboxes() {
+    let cumulativeBox = document.getElementById('cumulativeBox')
+    let logBox = document.getElementById('logBox')
+    // let predictBox = document.getElementById('predictBox')
+
+    cumulativeBox.checked = cumulative
+    logBox.checked = log
+
+    cumulativeBox.onclick = (e) => {
+        cumulative = e.target.checked
+        updateData() // cumulative needs also data update
+    }
+
+    logBox.onclick = (e) => {
+        log = e.target.checked
+        updateChart() // update only chart
     }
 }
 
@@ -102,14 +127,17 @@ function updateData() {
             dataset.data.push(value)
         });
     })
+    cachedLabels = times
+    cachedDatasets = datasets
     updateChart(times, datasets)
 }
 
 
-function updateChart(labels, datasets){
+function updateChart(labels = cachedLabels, datasets = cachedDatasets){
     if(vaccinationChart){
         vaccinationChart.data.labels = labels
         vaccinationChart.data.datasets = datasets
+        vaccinationChart.options.scales.yAxes[0].type = log ? 'logarithmic' : 'linear'
         vaccinationChart.update()
     }else{
         var ctx = document.getElementById('vaccinationChart').getContext('2d');
@@ -128,12 +156,19 @@ function updateChart(labels, datasets){
                         boxWidth: 50
                     }
                     
+                },
+                scales: {
+                    yAxes: [{
+                        type: log ? 'logarithmic' : 'linear'
+                    }]
                 }
                 
             }
         });
     }
-
 }
 
+window.onload = () => {
+    prepCheckboxes()
+} 
 loadData()

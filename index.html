@@ -20,17 +20,20 @@
         <select id="areaSelect" class="border rounded p-2"></select>
         <div class="flex flex-1 flex-col select-none">
           <label class="checkbox">Kumulatiivinen
-            <input class="checkbox" type="checkbox" />
+            <input class="checkbox" id="cumulativeBox" type="checkbox" checked />
             <span class="checkbox border rounded align-middle m-1"></span>
           </label>
           <label class="checkbox">Logaritminen asteikko
-            <input class="checkbox" type="checkbox" />
+            <input class="checkbox" id="logBox" type="checkbox" />
             <span class="checkbox border rounded align-middle m-1"></span>
           </label>
-          <label class="checkbox">Ennusta tulevia lukuja
-            <input class="checkbox" type="checkbox" />
-            <span class="checkbox border rounded align-middle m-1"></span>
-          </label>
+          <!--
+            <label class="checkbox">Ennusta tulevia lukuja
+              <input class="checkbox" id="predictBox" type="checkbox" />
+              <span class="checkbox border rounded align-middle m-1"></span>
+            </label>
+          -->
+          
         
         </div>
         
@@ -40,7 +43,7 @@
       </div>
       <div class="row-span-3 col-span-2 bg-gray-200 border rounded p-2 pb-4">
         <p class="text-xl">Koronarokotusten edistyminen ikäluokittain</p>
-        <canvas id="vaccinationChart"></canvas>
+        <canvas id="vaccinationChart" class="w-full h-full"></canvas>
       </div>
     </div>
 </body>
