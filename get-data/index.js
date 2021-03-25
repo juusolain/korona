@@ -6,8 +6,8 @@ const _ = require('lodash')
 const fs = require('fs')
 
 JSONstat(url_vaccines).then(J=>{
-        const tbl = J.Dataset( 0 ).toTable({ type: 'arrobj' })
-        fs.writeFileSync('./out/vaccines.json', JSON.stringify(tbl))
+    const tbl = J.Dataset( 0 ).toTable({ type: 'arrobj' })
+    fs.writeFileSync('./out/vaccines.json', JSON.stringify(tbl))
 })
 
 JSONstat(url_cases_all).then(J=>{
