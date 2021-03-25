@@ -1,12 +1,25 @@
+let caseChart
 let vaccinationChart
-let cachedData
 
-let area = "Kaikki alueet"
+let cachedCases
+let cachedVaccine
+
+let cachedVaccineLabels
+let cachedVaccineDatasets
+
+let cachedCaseDatasets
+let cachedCaseLabels
+
+let area = "Espoo"
 let cumulative = true
 let log = false
 
-let cachedLabels
-let cachedDatasets
+let useCasePercentage = true
+
+let maxWeeks = 30
+let limitTime = true
+
+const dateRegex = /Vuosi (\d+) Viikko (\d+)/
 
 const colors = [
     '#6666ff',
@@ -27,13 +40,28 @@ const colors = [
     '#666'
 ]
 
+// Add getweek to date
+Date.prototype.getWeek = function(){
+    var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+    var dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1)/7)
+};
+
 
 function loadData(){
     fetch('/data/vaccines.json').then(function(res) {
         res.json().then(function(json) {
-          cachedData = json
+          cachedVaccine = json
           setAreas()
-          updateData()
+          updateVaccinations()
+        });
+    });
+    fetch('/data/cases.json').then(function(res) {
+        res.json().then(function(json) {
+          cachedCases = json
+          updateCases()
         });
     });
 }
@@ -50,7 +78,7 @@ function getRandomColor() {
 function setAreas() {
     let areas = []
     let areaSelect = document.getElementById('areaSelect')
-    _.forEach(cachedData, val => {
+    _.forEach(cachedVaccine, val => {
         const area = val.area
         if(!areas.includes(area)){
             areas.push(area)
@@ -61,7 +89,7 @@ function setAreas() {
     })
     areaSelect.onchange = (e)=>{
         area = e.target.value
-        updateData()
+        updateVaccinations()
     }
 }
 
@@ -75,17 +103,19 @@ function prepCheckboxes() {
 
     cumulativeBox.onclick = (e) => {
         cumulative = e.target.checked
-        updateData() // cumulative needs also data update
+        updateVaccinations() // cumulative needs also data update
+        updateCases()
     }
 
     logBox.onclick = (e) => {
         log = e.target.checked
-        updateChart() // update only chart
+        updateVaccinationChart() // update only chart
+        updateCaseChart()
     }
 }
 
-function updateData() {
-    let data = cachedData
+function updateVaccinations() {
+    let data = cachedVaccine
     data = _.filter(data, (o)=>{
         return o.area === area
     })
@@ -94,8 +124,20 @@ function updateData() {
     let times = []
     let datasets = []
     let colori = 0
+    const curDate = new Date()
+    const curWeek = curDate.getWeek()
+    const curYear = curDate.getFullYear()
     _.forOwn(data, (arr, key)=>{
         if(key === 'Kaikki ajat') return
+        const match = key.match(dateRegex)
+        const year = Number(match[1])
+        const week = Number(match[2])
+        let weeksBehind = 0
+        weeksBehind += (curYear - year) * 52 
+        weeksBehind += (curWeek - week)
+        console.log(weeksBehind)
+        if(weeksBehind <= 0) return
+        if(limitTime && weeksBehind > maxWeeks) return
         times.push(key)
         arr.forEach(row => {
             const age = row.cov_vac_age
@@ -127,13 +169,131 @@ function updateData() {
             dataset.data.push(value)
         });
     })
-    cachedLabels = times
-    cachedDatasets = datasets
-    updateChart(times, datasets)
+    cachedVaccineLabels = times
+    cachedVaccineDatasets = datasets
+    updateVaccinationChart(times, datasets)
 }
 
+function updateCases() {
+    let data = cachedCases
+    data = _.sortBy(data, 'dateweek20200101')
+    data = _.groupBy(data, 'dateweek20200101')
+    console.log(data)
+    let times = []
+    let datasets = []
+    let colori = 0
+    const curDate = new Date()
+    const curWeek = curDate.getWeek()
+    const curYear = curDate.getFullYear()
+    _.forOwn(data, (arr, key)=>{
+        if(key === 'Kaikki ajat') return
+        const match = key.match(dateRegex)
+        const year = Number(match[1])
+        const week = Number(match[2])
+        let weeksBehind = 0
+        // TODO: take 53 week years into account
+        weeksBehind += (curYear - year) * 52 
+        weeksBehind += (curWeek - week)
+        if(weeksBehind <= 0) return
+        if(limitTime && weeksBehind > maxWeeks) return
+        times.push(key)
 
-function updateChart(labels = cachedLabels, datasets = cachedDatasets){
+        let total = 0
+        if (useCasePercentage && !cumulative) {
+            if (!arr.some((row)=>{
+                if(row.ttr10yage === 'Kaikki ikäryhmät'){
+                    total = Number(row.value)
+                    return true
+                }
+            })){
+                console.error("Didn't find total of age group... ")
+            }
+        }
+
+        arr.forEach(row => {
+            const age = row.ttr10yage
+            let value = Number(row.value)
+            if (useCasePercentage && !cumulative){
+                if(age === 'Kaikki ikäryhmät') return
+                value = value * 100 / total
+            }
+            let dataset = _.find(datasets, (o)=>{
+                return o.label === age 
+            })
+            if(!dataset){
+                if(colori >= colors.length){
+                    color = getRandomColor()
+                }else{
+                    color = colors[colori]
+                    colori++
+                }
+                dataset = {
+                    label: age,
+                    data: [],
+                    borderColor: color,
+                    backgroundColor: color,
+                    fill: false
+                }
+                
+                datasets.push(dataset)
+            }
+            if(cumulative) {
+                const last = dataset.data[dataset.data.length - 1] || 0
+                value += last
+            }
+            dataset.data.push(value)
+        });
+    })
+    cachedCaseLabels = times
+    cachedCaseDatasets = datasets
+    updateCaseChart(times, datasets)
+}
+
+function addPercentageSign(value) {
+    return value + "%"
+}
+
+function updateCaseChart(labels = cachedCaseLabels, datasets = cachedCaseDatasets){
+    const actuallyUsePercentage = useCasePercentage && !cumulative
+    if(caseChart){
+        caseChart.data.labels = labels
+        caseChart.data.datasets = datasets
+        caseChart.options.scales.yAxes[0].type = log ? 'logarithmic' : 'linear'
+        caseChart.options.scales.yAxes[0].ticks.callback = actuallyUsePercentage ? addPercentageSign : function (v){return v}
+        caseChart.update()
+    }else{
+        var ctx = document.getElementById('caseChart').getContext('2d');
+        caseChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: datasets,
+                labels: labels
+            },
+            options: {
+                maintainAspectRatio: false,
+                legend: {
+                    labels: {
+                        fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+                        fontColor: "#444",
+                        fontSize: 16,
+                        boxWidth: 50
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        type: log ? 'logarithmic' : 'linear',
+                        ticks: {
+                            callback: actuallyUsePercentage ? addPercentageSign : function (v){return v}
+                        }
+                    }]
+                }
+                
+            }
+        });
+    }
+}
+
+function updateVaccinationChart(labels = cachedVaccineLabels, datasets = cachedVaccineDatasets){
     if(vaccinationChart){
         vaccinationChart.data.labels = labels
         vaccinationChart.data.datasets = datasets
@@ -148,6 +308,7 @@ function updateChart(labels = cachedLabels, datasets = cachedDatasets){
                 labels: labels
             },
             options: {
+                maintainAspectRatio: false,
                 legend: {
                     labels: {
                         fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
@@ -155,7 +316,6 @@ function updateChart(labels = cachedLabels, datasets = cachedDatasets){
                         fontSize: 16,
                         boxWidth: 50
                     }
-                    
                 },
                 scales: {
                     yAxes: [{
