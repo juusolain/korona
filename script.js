@@ -10,7 +10,7 @@ let cachedVaccineDatasets
 let cachedCaseDatasets
 let cachedCaseLabels
 
-let area = "Espoo"
+let area = "Kaikki alueet"
 let cumulative = true
 let log = false
 
@@ -56,7 +56,7 @@ function loadData(){
           cachedVaccine = json
           setAreas()
           updateVaccinations()
-        });
+        })
     });
     fetch('/data/cases.json').then(function(res) {
         res.json().then(function(json) {
@@ -178,7 +178,6 @@ function updateCases() {
     let data = cachedCases
     data = _.sortBy(data, 'dateweek20200101')
     data = _.groupBy(data, 'dateweek20200101')
-    console.log(data)
     let times = []
     let datasets = []
     let colori = 0
