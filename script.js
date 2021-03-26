@@ -135,7 +135,6 @@ function updateVaccinations() {
         let weeksBehind = 0
         weeksBehind += (curYear - year) * 52 
         weeksBehind += (curWeek - week)
-        console.log(weeksBehind)
         if(weeksBehind <= 0) return
         if(limitTime && weeksBehind > maxWeeks) return
         times.push(key)
